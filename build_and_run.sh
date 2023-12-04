@@ -1,2 +1,2 @@
-g++ -o main main.cpp -lraylib -ldl -lpthread -lm -lX11
+g++ -o main src/main.cpp -lraylib -ldl -lpthread -lm -lX11
 ./main
