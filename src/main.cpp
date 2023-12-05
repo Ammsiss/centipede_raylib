@@ -35,6 +35,8 @@ public:
         DrawRectangle(m_x, m_y, m_dimension.x, m_dimension.y, RED);
     }
 
+    int getY() { return m_y; }
+
 private:
     int m_x{}; 
     int m_y{};
@@ -46,14 +48,32 @@ private:
 class Ball
 {
 public:
-    void update()
+    void update(Paddle p1, Paddle p2)
     {
+        if(m_position.x == 10)
+            movingForward = true;
+        
+        if(m_position.x == 790)
+            movingForward = false;
+
+        if(m_position.x == 40 && m_position.y + 10 >= p1.getY() && m_position.y - 10 <= p1.getY() + 150)
+            movingForward = true;
+
+        if(m_position.x == 760 && m_position.y + 10 >= p2.getY() && m_position.y - 10 <= p2.getY() + 150)
+            movingForward = false;
+
+        if(movingForward)
+            m_position.x += 5;
+        else
+            m_position.x -= 5;
+
         DrawCircle(m_position.x, m_position.y, m_radius, RED);
     }
 
 private:
     float m_radius{10.0};
     Vector m_position{ 400, 400 };
+    bool movingForward{true};
 };
 
 int main() 
@@ -61,8 +81,8 @@ int main()
     InitWindow(800, 800, "Raylib Libraries Test");
     SetTargetFPS(60);
 
-    Paddle paddle1{20, 400, KEY_W, KEY_S};
-    Paddle paddle2{770, 400, KEY_I, KEY_K};
+    Paddle p1{20, 400, KEY_W, KEY_S};
+    Paddle p2{770, 400, KEY_I, KEY_K};
     Ball ball{};
 
     while (!WindowShouldClose()) 
@@ -73,10 +93,9 @@ int main()
         BeginDrawing();
         ClearBackground(GRAY);
 
-        paddle1.update(); 
-        paddle2.update();
-        
-        ball.update();
+            p1.update(); 
+            p2.update();
+            ball.update(p1, p2);
         
         EndDrawing();
     }
