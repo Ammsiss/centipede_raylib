@@ -1,5 +1,7 @@
 #include <vector>
 #include <random>
+#include <utility>
+#include <algorithm>
 
 #include "raylib.h"
 
@@ -50,30 +52,63 @@ class Ball
 public:
     void update(Paddle p1, Paddle p2)
     {
-        if(m_position.x == 10)
-            movingForward = true;
-        
-        if(m_position.x == 790)
-            movingForward = false;
+        checkWallHit();
 
-        if(m_position.x == 40 && m_position.y + 10 >= p1.getY() && m_position.y - 10 <= p1.getY() + 150)
-            movingForward = true;
+        checkPaddleHit(p1, p2);
 
-        if(m_position.x == 760 && m_position.y + 10 >= p2.getY() && m_position.y - 10 <= p2.getY() + 150)
-            movingForward = false;
-
-        if(movingForward)
-            m_position.x += 5;
-        else
-            m_position.x -= 5;
+        updatePosition();
 
         DrawCircle(m_position.x, m_position.y, m_radius, RED);
+        drawScore();
     }
 
 private:
     float m_radius{10.0};
     Vector m_position{ 400, 400 };
-    bool movingForward{true};
+    bool m_movingForward{true};
+    int m_score1{0};
+    int m_score2{0};
+
+    void checkPaddleHit(Paddle p1, Paddle p2)
+    {
+        if(m_position.x == 40 && m_position.y + 10 >= p1.getY() && m_position.y - 10 <= p1.getY() + 150)
+            m_movingForward = true;
+
+        if(m_position.x == 760 && m_position.y + 10 >= p2.getY() && m_position.y - 10 <= p2.getY() + 150)
+            m_movingForward = false;
+    }
+
+    void checkWallHit()
+    {
+        if(m_position.x == 10)
+        {
+            m_movingForward = true;
+            ++m_score2;
+        }
+        
+        if(m_position.x == 790)
+        {
+            m_movingForward = false;
+            ++m_score1;
+        }
+    }
+
+    void updatePosition()
+    {
+        if(m_movingForward)
+            m_position.x += 5;
+        else
+            m_position.x -= 5;
+    }
+
+    void drawScore()
+    {
+        std::string score1{ std::to_string(m_score1) };
+        DrawText(score1.c_str(), 5, 1, 40, RED);
+
+        std::string score2{ std::to_string(m_score2) };
+        DrawText(score2.c_str(), 750, 1, 40, RED);
+    }
 };
 
 int main() 
