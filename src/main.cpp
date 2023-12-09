@@ -2,6 +2,7 @@
 #include <random>
 #include <utility>
 #include <algorithm>
+#include <string>
 
 #include "raylib.h"
 
@@ -13,8 +14,8 @@ namespace Random
 
 struct Vector
 {
-    int x{};
-    int y{};
+    float x{};
+    float y{};
 };
 
 class Paddle
@@ -54,6 +55,8 @@ public:
     {
         checkWallHit();
 
+        checkCeilingHit();
+
         checkPaddleHit(p1, p2);
 
         updatePosition();
@@ -66,8 +69,10 @@ private:
     float m_radius{10.0};
     Vector m_position{ 400, 400 };
     bool m_movingForward{true};
+    bool m_movingUp{true};
     int m_score1{0};
     int m_score2{0};
+    std::string m_debug{};
 
     void checkPaddleHit(Paddle p1, Paddle p2)
     {
@@ -93,21 +98,43 @@ private:
         }
     }
 
+    void checkCeilingHit()
+    {
+        if(m_position.y == 10)
+        {
+            m_movingUp = true;
+            m_debug = "hit top";
+        }
+
+        if(m_position.y == 790)
+        {
+            m_movingUp = false;
+            m_debug = "hit bottom";
+        }
+    }
+
     void updatePosition()
     {
         if(m_movingForward)
             m_position.x += 5;
         else
             m_position.x -= 5;
+
+        if(m_movingUp)
+            m_position.y += 2;
+        else
+            m_position.y -= 2;
     }
 
     void drawScore()
     {
         std::string score1{ std::to_string(m_score1) };
-        DrawText(score1.c_str(), 5, 1, 40, RED);
-
+        DrawText(score1.c_str(), 380, 1, 40, RED);
+        
         std::string score2{ std::to_string(m_score2) };
-        DrawText(score2.c_str(), 750, 1, 40, RED);
+        DrawText(score2.c_str(), 380, 759, 40, RED);
+
+        DrawText(m_debug.c_str(), 1, 1, 30, RED);
     }
 };
 
