@@ -33,12 +33,12 @@ public:
     {
     }
 
-    void update(Mushroom& mushies)
+    void update(Mushroom& mushies, Texture2D texture2, Texture2D texture3)
     {
         checkInput();
-        checkShoot();
+        checkShoot(texture3);
         checkMushroom(mushies);
-        DrawRectangle(m_position.x, m_position.y, 30, 30, RED);
+        DrawTexture(texture2, m_position.x, m_position.y, WHITE);
     }
 
 private:
@@ -77,7 +77,7 @@ private:
         }
     }
 
-    void checkShoot()
+    void checkShoot(Texture2D texture3)
     {
         if(IsKeyPressed(KEY_SPACE))
         {   
@@ -86,7 +86,7 @@ private:
 
         for(auto& shot : m_shotPosition)
         {
-            DrawCircle(shot.x + 15, shot.y, 10, RED);
+            DrawTexture(texture3, shot.x + 10, shot.y, WHITE);
             shot.y -= 7;
         }
 
@@ -116,6 +116,8 @@ int main(int argc, char *argv[])
     Mushroom mushies{};
 
     Texture2D texture{ 0 };
+    Texture2D texture2{ 0 };
+    Texture2D texture3{ 0 };
 
     if(argc > 1)
     {
@@ -125,6 +127,21 @@ int main(int argc, char *argv[])
             texture = LoadTextureFromImage(myImage);
             UnloadImage(myImage);
         }
+
+        Image myImageShooter{LoadImage(argv[2])};
+        if (myImageShooter.data != NULL)
+        {
+            texture2 = LoadTextureFromImage(myImageShooter);
+            UnloadImage(myImageShooter);
+        }
+
+        Image myImageShot{LoadImage(argv[3])};
+        if (myImageShot.data != NULL)
+        {
+            texture3 = LoadTextureFromImage(myImageShot);
+            UnloadImage(myImageShot);
+        }
+        
     }
 
     while(!WindowShouldClose())
@@ -135,7 +152,7 @@ int main(int argc, char *argv[])
         BeginDrawing();
         ClearBackground(BLACK);
 
-            player.update(mushies);
+            player.update(mushies, texture2, texture3);
             mushies.drawMushies(texture);
 
         EndDrawing();
@@ -144,6 +161,16 @@ int main(int argc, char *argv[])
     if(texture.id != 0)
     {
         UnloadTexture(texture);
+    }
+
+    if(texture2.id != 0)
+    {
+        UnloadTexture(texture2);
+    }
+
+    if(texture3.id != 0)
+    {
+        UnloadTexture(texture3);
     }
 
     CloseWindow();
